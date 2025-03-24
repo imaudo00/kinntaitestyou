@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Google Sheets Webhook テストフォーム</title>
+  <title>Google Sheets Webhook テストフォームχ</title>
   <!-- このフォームは、Google Apps Script（GAS）へのPOST送信をテストするためのものです -->
 </head>
 <body>
@@ -55,10 +55,11 @@
       try {
         // GAS への POST 送信（fetch API を使用）
         const response = await fetch(sheetsUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },  // application/json ではなく text/plain を指定
+      body: JSON.stringify(payload),
+      });
+
         // レスポンスのテキストを取得
         const result = await response.text();
         alert('送信成功: ' + result);
