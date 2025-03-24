@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Sheets Webhook テストフォーム</title>
+  <!-- このフォームは、Google Apps Script（GAS）へのPOST送信をテストするためのものです -->
+</head>
+<body>
+  <h1>Google Sheets Webhook テスト</h1>
+  <p>以下のフォームに入力して、Google スプレッドシートへのデータ送信ができるか確認してください。</p>
+  <form id="testForm">
+    <!-- 社員番号の入力 -->
+    <label for="employeeId">社員番号:</label>
+    <input type="text" id="employeeId" name="employeeId" required>
+    <br><br>
+    <!-- 氏名の入力 -->
+    <label for="employeeName">氏名:</label>
+    <input type="text" id="employeeName" name="employeeName" required>
+    <br><br>
+    <!-- 備考の入力 -->
+    <label for="remarks">備考:</label>
+    <input type="text" id="remarks" name="remarks" required>
+    <br><br>
+    <button type="submit">送信</button>
+  </form>
+
+  <script>
+    // Google Apps Script 側のURL
+    // ★ここはあなたのGASのウェブアプリURLに変更してください★
+    const sheetsUrl = 'https://script.google.com/macros/s/AKfycbzAvMmpMQpeXshqAFnX9YwAz2a5kGdn5C7hTVl9-Mcphu6X96lVxoc_xWJy5WssxI8b4A/exec';
+
+    // フォームの送信処理
+    document.getElementById('testForm').addEventListener('submit', async function(event) {
+      event.preventDefault(); // フォームのデフォルト送信をキャンセル
+
+      // 入力項目の値を取得
+      const employeeId = document.getElementById('employeeId').value.trim();
+      const employeeName = document.getElementById('employeeName').value.trim();
+      const remarks = document.getElementById('remarks').value.trim();
+      
+      // 固定で設定する値：今日の日付とテスト用のステータス
+      const date = new Date().toISOString().split('T')[0];
+      const status = "テスト";
+
+      // GAS へ送信するためのデータ（ペイロード）
+      const payload = {
+        employeeId,
+        employeeName,
+        date,
+        status,
+        remarks
+      };
+
+      try {
+        // GAS への POST 送信（fetch API を使用）
+        const response = await fetch(sheetsUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        // レスポンスのテキストを取得
+        const result = await response.text();
+        alert('送信成功: ' + result);
+        // フォームをリセット（入力欄クリア）
+        document.getElementById('testForm').reset();
+      } catch (error) {
+        // エラー時のアラート表示
+        alert('送信中にエラーが発生しました: ' + error.message);
+      }
+    });
+  </script>
+</body>
+</html>
