@@ -182,23 +182,32 @@
       };
 
       try {
-        // ① Google Chat への送信（Content-Type: application/json で送信）
-        await fetch(webhookUrl, {
+        // ① Google Chat への送信（Content-Type: application/json）
+        const chatRes = await fetch(webhookUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ text: message }),
         });
+        // レスポンスのステータスをチェック
+        if (!chatRes.ok) {
+          console.error('Google Chat送信エラー:', chatRes.status);
+        }
 
-        // ② Google Sheets への送信
-        // ※プリフライト（OPTIONS）を回避するため、Content-Type を 'text/plain' に変更
-        await fetch(sheetsUrl, {
+        // ② Google Sheets への送信（Content-Type: text/plain でプリフライト回避）
+        const sheetsRes = await fetch(sheetsUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify(payload),
         });
+        if (!sheetsRes.ok) {
+          console.error('Google Sheets送信エラー:', sheetsRes.status);
+        }
 
+        // どちらも致命的なエラーでなければ成功とみなす
         alert('連絡内容がGoogle Chatとスプレッドシートに送信されました！');
       } catch (error) {
+        // ネットワークエラー等、致命的な例外が発生した場合のみアラート表示
+        console.error('fetchエラー:', error);
         alert('エラーが発生しました: ' + error.message);
       }
 
